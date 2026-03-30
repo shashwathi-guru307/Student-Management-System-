@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Student Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Register as a new student</p>
+            </div>
+            
+            <div id="register-alert" class="alert"></div>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" required minlength="4">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" required minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirm_password" class="form-control" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="register-btn">Register</button>
+            </form>
+            
+            <div class="auth-links">
+                <p>Already have an account? <a href="index.html">Sign in here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const registerForm = document.getElementById('register-form');
+            if (registerForm) {
+                registerForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const username = document.getElementById('username').value;
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    const confirmPassword = document.getElementById('confirm-password').value;
+                    const btn = document.getElementById('register-btn');
+                    
+                    if (password !== confirmPassword) {
+                        showAlert('register-alert', 'Passwords do not match.', 'error');
+                        return;
+                    }
+                    
+                    if (password.length < 6) {
+                        showAlert('register-alert', 'Password must be at least 6 characters.', 'error');
+                        return;
+                    }
+                    
+                    try {
+                        btn.textContent = 'Registering...';
+                        btn.disabled = true;
+                        
+                        const response = await fetch('api/auth.php?action=register', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username, email, password })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            showAlert('register-alert', data.message, 'success');
+                            registerForm.reset();
+                            setTimeout(() => {
+                                window.location.href = 'index.html';
+                            }, 2000);
+                        } else {
+                            showAlert('register-alert', data.message || 'Registration failed', 'error');
+                            btn.textContent = 'Register';
+                            btn.disabled = false;
+                        }
+                    } catch (error) {
+                        showAlert('register-alert', 'An error occurred during registration.', 'error');
+                        console.error('Registration error:', error);
+                        btn.textContent = 'Register';
+                        btn.disabled = false;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
