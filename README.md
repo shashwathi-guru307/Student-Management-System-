@@ -47,3 +47,5 @@ A complete, production-ready Student Management System built with a three-tier a
 - Real-time client-side JS and robust server-side PHP form validation.
 - Secure, token-based role segregation (Admins vs Students functionality encapsulation).
 - Cross-Site Scripting (XSS) prevention through HTML output sanitization.
+
+## My project link http://localhost/miniwe/
